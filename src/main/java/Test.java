@@ -42,6 +42,7 @@ public class Test {
 
             ClassLoader loader = new DependencyArchiveLauncher().getClassLoader(path);
             ClassLoader loader2 = new DependencyArchiveLauncher().getClassLoader(path2);
+            //TODO 读取xml配置，反射加载类并创建对象
 
             //根据类名加载指定类，例：
 //            Class logFactoryClazz = loader.loadClass("org.slf4j.LoggerFactory");
@@ -66,7 +67,7 @@ public class Test {
             Method method2 = clazz2.getMethod("execute", String.class);
             method.invoke(o,"conflictc");
             method2.invoke(o2,"conflictb");
-//            loadBusinessServiceList("conflictb",loader2);
+            loadBusinessServiceList("conflictb",loader2);
 
         } catch (Exception e) {
             e.printStackTrace();
