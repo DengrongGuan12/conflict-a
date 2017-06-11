@@ -13,7 +13,7 @@ public class Main {
     static private Logger logger = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args){
         Test test = new Test();
-        List<ObjectBundle> list = test.loadBusinessServiceList("conflictc");
+        List<ObjectBundle> list = test.loadBusinessServiceList("conflict-c");
         for (ObjectBundle ob :list
              ) {
             Class clazz = ob.getClazz();
