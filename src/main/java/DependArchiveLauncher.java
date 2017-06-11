@@ -39,8 +39,8 @@ public class DependArchiveLauncher extends Launcher {
     }
     protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
     }
-    public ClassLoader getClassLoader() throws Exception{
-        this.archive = this.createMyArchive();
+    public ClassLoader getClassLoader(String path) throws Exception{
+        this.archive = this.createMyArchive(path);
         ClassLoader classLoader = this.createClassLoader(this.getClassPathArchives());
         return classLoader;
     }
@@ -59,11 +59,11 @@ public class DependArchiveLauncher extends Launcher {
     protected ClassLoader createClassLoader(URL[] urls) throws Exception {
         return new LaunchedURLClassLoader(urls, null);
     }
-    private Archive createMyArchive() throws Exception{
-        ProtectionDomain protectionDomain = Launcher.class.getProtectionDomain();
-        CodeSource codeSource = protectionDomain.getCodeSource();
-        URI location = codeSource == null?null:codeSource.getLocation().toURI();
-        String path = location == null?null:location.getSchemeSpecificPart();
+    private Archive createMyArchive(String path) throws Exception{
+//        ProtectionDomain protectionDomain = Launcher.class.getProtectionDomain();
+//        CodeSource codeSource = protectionDomain.getCodeSource();
+//        URI location = codeSource == null?null:codeSource.getLocation().toURI();
+//        String path = location == null?null:location.getSchemeSpecificPart();
         if(path == null) {
             throw new IllegalStateException("Unable to determine code source archive");
         } else {
