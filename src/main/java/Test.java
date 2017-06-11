@@ -41,7 +41,9 @@ public class Test {
 
 //            URLClassLoader loader = new URLClassLoader( new URL[]{ url1,url2,url3 } ,null);
             String path = "/Users/dengrong/.m2/repository/com/cainiao/chushi/conflict-c/1.0-SNAPSHOT/conflict-c-1.0-SNAPSHOT.jar";
+            String path2 = "/Users/dengrong/.m2/repository/com/cainiao/chushi/conflict-b/1.0-SNAPSHOT/conflict-b-1.0-SNAPSHOT.jar";
             ClassLoader loader = new DependArchiveLauncher().getClassLoader(path);
+            ClassLoader loader2 = new DependArchiveLauncher().getClassLoader(path2);
 
             //根据类名加载指定类，例：
 //            Class logFactoryClazz = loader.loadClass("org.slf4j.LoggerFactory");
@@ -49,12 +51,24 @@ public class Test {
 //            Class loggerClazz = loader.loadClass("org.slf4j.Logger");
 //            Method errorMethod = loggerClazz.getMethod("error",String.class);
 //            Method method2 = loggerClazz.getMethod("trace",String.class);
-            Class clazz = loader.loadClass("com.cainiao.chushi.util.LogUtil");
+            Class clazz = loader.loadClass("com.cainiao.chushi.conflictc.LogUtil");
+            Class clazz2 = loader2.loadClass("com.cainiao.chushi.conflictb.LogUtil");
 //            Object logger = method1.invoke(null,clazz);
 //            method2.invoke(logger,"[trace message]");
             Object o = clazz.newInstance();
-            Method method = clazz.getMethod("log", String.class);
-            method.invoke(o,"chushi");
+            Object o2 = clazz2.newInstance();
+            if(o instanceof Object){
+                System.out.println("o is instance of Object");
+            }
+            if(o2 instanceof Object){
+                System.out.println("o2 is instance of Object");
+            }
+//            BusinessService businessService = (BusinessService)o;
+            Method method = clazz.getMethod("execute", String.class);
+            Method method2 = clazz2.getMethod("execute", String.class);
+            method.invoke(o,"conflictc");
+            method2.invoke(o2,"conflictb");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,10 +78,12 @@ public class Test {
     }
 
     private List<BusinessService> loadBusinessServiceList(String bizBundleName) {
-        PathMatchingResourcePatternResolver pmrl = new PathMatchingResourcePatternResolver(applicationContext.getClassLoader());
+//        PathMatchingResourcePatternResolver pmrl = new PathMatchingResourcePatternResolver(applicationContext.getClassLoader());
+        PathMatchingResourcePatternResolver pmrl = new PathMatchingResourcePatternResolver(Test.class.getClassLoader());
         Resource resource = pmrl.getResource("classpath:" + "com/cainiao/alphabird/biz/" + bizBundleName + "/alphabird-biz.xml");
 
-        GenericApplicationContext genericApplicationContext = new GenericApplicationContext(applicationContext);
+//        GenericApplicationContext genericApplicationContext = new GenericApplicationContext(applicationContext);
+        GenericApplicationContext genericApplicationContext = new GenericApplicationContext();
         BeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(genericApplicationContext);
         beanDefinitionReader.loadBeanDefinitions(resource);
         genericApplicationContext.refresh();
