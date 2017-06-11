@@ -1,27 +1,12 @@
 import com.cainiao.chushi.sdk.service.BusinessService;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.boot.loader.ExecutableArchiveLauncher;
-import org.springframework.boot.loader.JarLauncher;
-import org.springframework.boot.loader.archive.Archive;
-import org.springframework.boot.loader.archive.ExplodedArchive;
-import org.springframework.boot.loader.archive.JarFileArchive;
-import org.springframework.boot.loader.jar.JarFile;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
 import java.util.*;
-import java.util.jar.Manifest;
 
 /**
  * Created by dengrong on 2017/6/5.
@@ -40,10 +25,23 @@ public class Test {
             //里面是一个url的数组，可以同时加载多个
 
 //            URLClassLoader loader = new URLClassLoader( new URL[]{ url1,url2,url3 } ,null);
-            String path = "/Users/dengrong/.m2/repository/com/cainiao/chushi/conflict-c/1.0-SNAPSHOT/conflict-c-1.0-SNAPSHOT.jar";
-            String path2 = "/Users/dengrong/.m2/repository/com/cainiao/chushi/conflict-b/1.0-SNAPSHOT/conflict-b-1.0-SNAPSHOT.jar";
-            ClassLoader loader = new DependArchiveLauncher().getClassLoader(path);
-            ClassLoader loader2 = new DependArchiveLauncher().getClassLoader(path2);
+            String path="";
+            String path2="";
+            String filePath = System.getProperty("java.class.path");
+            String[] jars = filePath.split(":");
+            System.out.println(jars.length);
+
+            for (String jarPath:jars
+                 ) {
+                if(jarPath.contains("conflict-c")){
+                    path = jarPath;
+                }else if(jarPath.contains("conflict-b")){
+                    path2 = jarPath;
+                }
+            }
+
+            ClassLoader loader = new DependencyArchiveLauncher().getClassLoader(path);
+            ClassLoader loader2 = new DependencyArchiveLauncher().getClassLoader(path2);
 
             //根据类名加载指定类，例：
 //            Class logFactoryClazz = loader.loadClass("org.slf4j.LoggerFactory");
@@ -68,6 +66,7 @@ public class Test {
             Method method2 = clazz2.getMethod("execute", String.class);
             method.invoke(o,"conflictc");
             method2.invoke(o2,"conflictb");
+//            loadBusinessServiceList("conflictb",loader2);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,10 +76,10 @@ public class Test {
         // /Users/dengrong/.m2/repository/com/cainiao/chushi/conflict-c/1.0-SNAPSHOT/conflict-c-1.0-SNAPSHOT.jar!/BOOT-INF/classes
     }
 
-    private List<BusinessService> loadBusinessServiceList(String bizBundleName) {
+    private List<BusinessService> loadBusinessServiceList(String bizBundleName,ClassLoader loader) {
 //        PathMatchingResourcePatternResolver pmrl = new PathMatchingResourcePatternResolver(applicationContext.getClassLoader());
-        PathMatchingResourcePatternResolver pmrl = new PathMatchingResourcePatternResolver(Test.class.getClassLoader());
-        Resource resource = pmrl.getResource("classpath:" + "com/cainiao/alphabird/biz/" + bizBundleName + "/alphabird-biz.xml");
+        PathMatchingResourcePatternResolver pmrl = new PathMatchingResourcePatternResolver(loader);
+        Resource resource = pmrl.getResource("classpath:" + "com/cainiao/chushi/" + bizBundleName + "/alphabird-biz.xml");
 
 //        GenericApplicationContext genericApplicationContext = new GenericApplicationContext(applicationContext);
         GenericApplicationContext genericApplicationContext = new GenericApplicationContext();

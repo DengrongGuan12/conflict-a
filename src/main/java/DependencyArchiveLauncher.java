@@ -6,10 +6,7 @@ import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +14,7 @@ import java.util.List;
 /**
  * Created by dengrong on 2017/6/6.
  */
-public class DependArchiveLauncher extends Launcher {
+public class DependencyArchiveLauncher extends Launcher {
     private Archive archive;
     @Override
     protected String getMainClass() throws Exception {
@@ -28,7 +25,7 @@ public class DependArchiveLauncher extends Launcher {
     protected List<Archive> getClassPathArchives() throws Exception {
         ArrayList archives = new ArrayList(this.archive.getNestedArchives(new Archive.EntryFilter() {
             public boolean matches(Archive.Entry entry) {
-                return DependArchiveLauncher.this.isNestedArchive(entry);
+                return DependencyArchiveLauncher.this.isNestedArchive(entry);
             }
         }));
         this.postProcessClassPathArchives(archives);
