@@ -63,9 +63,9 @@ public class Test {
         // /Users/dengrong/.m2/repository/com/cainiao/chushi/conflict-c/1.0-SNAPSHOT/conflict-c-1.0-SNAPSHOT.jar!/BOOT-INF/classes
     }
 
-    private List<BusinessService> loadBusinessServiceList(BizBundleLoadable bizBundleLoadable) {
+    private List<BusinessService> loadBusinessServiceList(String bizBundleName) {
         PathMatchingResourcePatternResolver pmrl = new PathMatchingResourcePatternResolver(applicationContext.getClassLoader());
-        Resource resource = pmrl.getResource("classpath:" + "com/cainiao/alphabird/biz/" + bizBundleLoadable.bizBundleName + "/alphabird-biz.xml");
+        Resource resource = pmrl.getResource("classpath:" + "com/cainiao/alphabird/biz/" + bizBundleName + "/alphabird-biz.xml");
 
         GenericApplicationContext genericApplicationContext = new GenericApplicationContext(applicationContext);
         BeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(genericApplicationContext);
@@ -74,7 +74,7 @@ public class Test {
 
         Map<String, BusinessService> businessServiceMap = genericApplicationContext.getBeansOfType(BusinessService.class);
 
-        return new LinkedList<>(businessServiceMap.values());
+        return new LinkedList<BusinessService>(businessServiceMap.values());
     }
     public Test(){
 
