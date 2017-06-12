@@ -21,6 +21,8 @@ public class DependencyArchiveLauncher extends Launcher {
         return null;
     }
 
+
+
     @Override
     protected List<Archive> getClassPathArchives() throws Exception {
         ArrayList archives = new ArrayList(this.archive.getNestedArchives(new Archive.EntryFilter() {
