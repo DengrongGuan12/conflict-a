@@ -1,4 +1,9 @@
-
+import com.cainiao.chushi.sdk.service.BusinessService;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -108,12 +113,10 @@ public class Test {
                 break;
             }
         }
-        //TODO 这一步如果包名和工程名严格相等是不需要的
-        bizBundleName = bizBundleName.replace("-","");
         List<ObjectBundle> list = new LinkedList<ObjectBundle>();
         try {
             ClassLoader loader = new DependencyArchiveLauncher().getClassLoader(path);
-            InputStream inputStream = loader.getResourceAsStream("com/cainiao/chushi/"+bizBundleName+"/alphabird-biz.xml");
+            InputStream inputStream = loader.getResourceAsStream("com/cainiao/chushi/"+"conflictc"+"/alphabird-biz.xml");
             DocumentBuilderFactory builderFactory =  DocumentBuilderFactory.newInstance();
 
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
