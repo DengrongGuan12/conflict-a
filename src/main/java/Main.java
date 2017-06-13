@@ -1,9 +1,12 @@
+import com.cainiao.alphabird.biz.sdk.service.BusinessServiceResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.rmi.runtime.Log;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dengrong on 2017/6/2.
@@ -12,25 +15,45 @@ import java.util.List;
 public class Main {
     // test revert 
     static private Logger logger = LoggerFactory.getLogger(Main.class);
-    public static void main(String[] args){
-        Test test = new Test();
-        List<ObjectBundle> list = test.loadBusinessServiceList("conflictc");
-        for (ObjectBundle ob :list
-             ) {
-            Class clazz = ob.getClazz();
-            Object o = ob.getObject();
-            try {
-                Method method = clazz.getMethod("execute", String.class);
-                method.invoke(o,"conflictc");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
+    public static void main(String[] args) {
+        Test test = new Test();
+//        List<ObjectBundle> list = test.loadBusinessServiceList("conflict-c");
+//        for (ObjectBundle ob :list
+//             ) {
+//            Class clazz = ob.getClazz();
+//            Object o = ob.getObject();
+//            try {
+//                Method method = clazz.getMethod("execute", String.class, Map.class);
+//                method.invoke(o,"conflictc",new HashMap<String,String>());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+        List<BizServiceInvoker> list = test.loadBusinessServiceList("demo");
+        for (BizServiceInvoker invoker : list
+                ) {
+            System.out.println(invoker.getRequestId("asas", new HashMap<String, Object>()));
+            BusinessServiceResultDTO dto = invoker.execute("sdsdf", new HashMap());
+            System.out.println(dto.getData());
+            System.out.println(dto.getExtraInfo().get("info"));
+            System.out.println(invoker.getServedBizIds()[0]);
+            System.out.println(invoker.getBizServiceSimpleName());
+            System.out.println(invoker.getServicePriority());
+            System.out.println(invoker.getExtTraceParams("sdsdf", new HashMap<String, Object>()).getLinkId());
         }
         // 记录error信息
         logger.error("[info message]");
         // 记录deubg信息
         logger.debug("[debug message]");
+        try {
+            if (BusinessServiceResultDTO.class == Main.class.getClassLoader().loadClass("com.cainiao.alphabird.biz.sdk.service.BusinessServiceResultDTO")) {
+                System.out.println("sdf234234234234234234sadfsadfasdfasdfasdf");
+            }
 
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

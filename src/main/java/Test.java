@@ -1,9 +1,3 @@
-import com.cainiao.chushi.sdk.service.BusinessService;
-import org.springframework.beans.factory.support.BeanDefinitionReader;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -101,7 +95,7 @@ public class Test {
         // /Users/dengrong/.m2/repository/com/cainiao/chushi/conflict-c/1.0-SNAPSHOT/conflict-c-1.0-SNAPSHOT.jar!/BOOT-INF/classes
     }
 
-    public List<ObjectBundle> loadBusinessServiceList(String bizBundleName) {
+    public List<BizServiceInvoker> loadBusinessServiceList(String bizBundleName) {
         String filePath = System.getProperty("java.class.path");
         String[] jars = filePath.split(":");
         System.out.println(jars.length);
@@ -113,10 +107,13 @@ public class Test {
                 break;
             }
         }
-        List<ObjectBundle> list = new LinkedList<ObjectBundle>();
+        bizBundleName = bizBundleName.replace("-","");
+        List<BizServiceInvoker> list = new LinkedList<BizServiceInvoker>();
+        InputStream inputStream = null;
         try {
             ClassLoader loader = new DependencyArchiveLauncher().getClassLoader(path);
-            InputStream inputStream = loader.getResourceAsStream("com/cainiao/chushi/"+"conflictc"+"/alphabird-biz.xml");
+            Class businessServiceClass = loader.loadClass("com.cainiao.alphabird.biz.sdk.service.BusinessService");
+            inputStream = loader.getResourceAsStream("com/cainiao/alphabird/biz/"+bizBundleName+"/alphabird-biz.xml");
             DocumentBuilderFactory builderFactory =  DocumentBuilderFactory.newInstance();
 
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -130,11 +127,24 @@ public class Test {
                 String classname = ele.getAttribute("class");
                 Class clazz = loader.loadClass(classname);
                 Object o = clazz.newInstance();
-                ObjectBundle objectBundle = new ObjectBundle(o,clazz);
-                list.add(objectBundle);
+                if (businessServiceClass.isAssignableFrom(clazz)){
+                    String method = ele.getAttribute("init-method");
+                    if(!"".equals(method)){
+                        Method method1 = o.getClass().getMethod(method);
+                        method1.invoke(o);
+                    }
+                    BizServiceInvoker bizServiceInvoker = new BizServiceInvoker(o);
+                    list.add(bizServiceInvoker);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return list;
     }
