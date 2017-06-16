@@ -55,7 +55,7 @@ public class DependencyArchiveLauncher extends Launcher {
     }
 
     protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-        return new LaunchedURLClassLoader(urls, null);
+        return new LaunchedURLClassLoader(urls, DependencyArchiveLauncher.class.getClassLoader().getParent());
     }
     private Archive createMyArchive(String path) throws Exception{
 //        ProtectionDomain protectionDomain = Launcher.class.getProtectionDomain();

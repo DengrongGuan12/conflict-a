@@ -1,3 +1,12 @@
+
+import com.cainiao.alphabird.biz.sdk.service.BusinessService;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -9,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -111,6 +121,7 @@ public class Test {
         List<BizServiceInvoker> list = new LinkedList<BizServiceInvoker>();
         InputStream inputStream = null;
         try {
+            System.out.println(path);
             ClassLoader loader = new DependencyArchiveLauncher().getClassLoader(path);
             Class businessServiceClass = loader.loadClass("com.cainiao.alphabird.biz.sdk.service.BusinessService");
             inputStream = loader.getResourceAsStream("com/cainiao/alphabird/biz/"+bizBundleName+"/alphabird-biz.xml");
@@ -122,12 +133,14 @@ public class Test {
             NodeList nList = doc.getElementsByTagName("bean");
             for(int i =0;i<nList.getLength();i++){
                 Node node = nList.item(i);
+
                 Element ele = (Element)node;
                 String id = ele.getAttribute("id");
                 String classname = ele.getAttribute("class");
                 Class clazz = loader.loadClass(classname);
                 Object o = clazz.newInstance();
                 if (businessServiceClass.isAssignableFrom(clazz)){
+                    System.out.println("yes");
                     String method = ele.getAttribute("init-method");
                     if(!"".equals(method)){
                         Method method1 = o.getClass().getMethod(method);
@@ -137,6 +150,29 @@ public class Test {
                     list.add(bizServiceInvoker);
                 }
             }
+//            Class ctxClass = loader.loadClass("org.springframework.context.support.GenericApplicationContext");
+//            Object ctx = ctxClass.newInstance();
+//            Class xmlReaderClass = loader.loadClass("org.springframework.beans.factory.xml.XmlBeanDefinitionReader");
+//            Class registryClass = loader.loadClass("org.springframework.beans.factory.support.BeanDefinitionRegistry");
+//            Constructor xmlReaderConstructor = xmlReaderClass.getConstructor(registryClass);
+//            Object xmlReader = xmlReaderConstructor.newInstance(ctx);
+//            Class classPathResourceClass = loader.loadClass("org.springframework.core.io.ClassPathResource");
+//            Class resourceClass = loader.loadClass("org.springframework.core.io.Resource");
+//            Constructor resourceConstructor = classPathResourceClass.getConstructor(String.class);
+//            Object classPathResource = resourceConstructor.newInstance("com/cainiao/alphabird/biz/demo/alphabird-biz.xml");
+//            Method loadBeanMethod = xmlReaderClass.getMethod("loadBeanDefinitions",resourceClass);
+//            loadBeanMethod.invoke(xmlReader,classPathResource);
+//            Method refreshMethod = ctxClass.getMethod("refresh");
+//            refreshMethod.invoke(ctx);
+//            Method getBeansMethod = ctxClass.getMethod("getBeansOfType",Class.class);
+//            Map<String,Object> businessServiceMap = (Map<String, Object>) getBeansMethod.invoke(ctx,businessServiceClass);
+//
+//
+//            for (Object o:businessServiceMap.values()
+//                 ) {
+//                BizServiceInvoker bizServiceInvoker = new BizServiceInvoker(o);
+//                list.add(bizServiceInvoker);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
@@ -151,5 +187,4 @@ public class Test {
     public Test(){
 
     }
-
 }
