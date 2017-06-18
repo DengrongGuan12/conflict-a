@@ -150,6 +150,11 @@ public class Test {
                     list.add(bizServiceInvoker);
                 }
             }
+
+            //使用Spring中自带的工厂模式
+//            BeanFactory factory=new XmlBeanFactory(rs);
+//实例化对象
+//            Person person=(Person) factory.getBean("person");
 //            Class ctxClass = loader.loadClass("org.springframework.context.support.GenericApplicationContext");
 //            Object ctx = ctxClass.newInstance();
 //            Class xmlReaderClass = loader.loadClass("org.springframework.beans.factory.xml.XmlBeanDefinitionReader");
