@@ -1,10 +1,13 @@
 
 import com.cainiao.alphabird.biz.sdk.service.BusinessService;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.w3c.dom.Document;
@@ -119,37 +122,38 @@ public class Test {
         }
         bizBundleName = bizBundleName.replace("-","");
         List<BizServiceInvoker> list = new LinkedList<BizServiceInvoker>();
-        InputStream inputStream = null;
         try {
             System.out.println(path);
-            ClassLoader loader = new DependencyArchiveLauncher().getClassLoader(path);
+            final ClassLoader loader = new DependencyArchiveLauncher().getClassLoader(path);
             Class businessServiceClass = loader.loadClass("com.cainiao.alphabird.biz.sdk.service.BusinessService");
-            inputStream = loader.getResourceAsStream("com/cainiao/alphabird/biz/"+bizBundleName+"/alphabird-biz.xml");
-            DocumentBuilderFactory builderFactory =  DocumentBuilderFactory.newInstance();
-
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            Document doc = builder.parse(inputStream);
-            doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("bean");
-            for(int i =0;i<nList.getLength();i++){
-                Node node = nList.item(i);
-
-                Element ele = (Element)node;
-                String id = ele.getAttribute("id");
-                String classname = ele.getAttribute("class");
-                Class clazz = loader.loadClass(classname);
-                Object o = clazz.newInstance();
-                if (businessServiceClass.isAssignableFrom(clazz)){
-                    System.out.println("yes");
-                    String method = ele.getAttribute("init-method");
-                    if(!"".equals(method)){
-                        Method method1 = o.getClass().getMethod(method);
-                        method1.invoke(o);
-                    }
-                    BizServiceInvoker bizServiceInvoker = new BizServiceInvoker(o);
-                    list.add(bizServiceInvoker);
-                }
-            }
+//            inputStream = loader.getResourceAsStream("com/cainiao/alphabird/biz/"+bizBundleName+"/alphabird-biz.xml");
+//
+//
+//            DocumentBuilderFactory builderFactory =  DocumentBuilderFactory.newInstance();
+//
+//            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+//            Document doc = builder.parse(inputStream);
+//            doc.getDocumentElement().normalize();
+//            NodeList nList = doc.getElementsByTagName("bean");
+//            for(int i =0;i<nList.getLength();i++){
+//                Node node = nList.item(i);
+//
+//                Element ele = (Element)node;
+//                String id = ele.getAttribute("id");
+//                String classname = ele.getAttribute("class");
+//                Class clazz = loader.loadClass(classname);
+//                Object o = clazz.newInstance();
+//                if (businessServiceClass.isAssignableFrom(clazz)){
+//                    System.out.println("yes");
+//                    String method = ele.getAttribute("init-method");
+//                    if(!"".equals(method)){
+//                        Method method1 = o.getClass().getMethod(method);
+//                        method1.invoke(o);
+//                    }
+//                    BizServiceInvoker bizServiceInvoker = new BizServiceInvoker(o);
+//                    list.add(bizServiceInvoker);
+//                }
+//            }
 
             //使用Spring中自带的工厂模式
 //            BeanFactory factory=new XmlBeanFactory(rs);
@@ -178,14 +182,30 @@ public class Test {
 //                BizServiceInvoker bizServiceInvoker = new BizServiceInvoker(o);
 //                list.add(bizServiceInvoker);
 //            }
+            // 加载配置文件的方式
+//            DefaultResourceLoader factory=new ClassPathXmlApplicationContext("classpath:com/cainiao/chushi/conflictc/alphabird-biz.xml");
+//            factory.setClassLoader(loader);
+//            Thread.currentThread().setContextClassLoader(loader);
+//            ApplicationContext beanFactory = new ClassPathXmlApplicationContext("classpath:com/cainiao/alphabird/biz/"+bizBundleName+"/alphabird-biz.xml");
+            ApplicationContext beanFactory = new ClassPathXmlApplicationContext("classpath:com/cainiao/alphabird/biz/"+"demo"+"/alphabird-biz.xml") {
+//
+                protected void initBeanDefinitionReader(XmlBeanDefinitionReader reader) {
+                    super.initBeanDefinitionReader(reader);
+//                    reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_AUTO);
+                    reader.setBeanClassLoader(loader);
+                    setClassLoader(loader);
+                }
+            };
+
+            Map<String,Object> businessServiceMap = beanFactory.getBeansOfType(businessServiceClass);
+            for (Object o:businessServiceMap.values()
+                 ) {
+                BizServiceInvoker bizServiceInvoker = new BizServiceInvoker(o);
+                list.add(bizServiceInvoker);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return list;
     }
