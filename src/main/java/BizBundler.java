@@ -185,6 +185,9 @@ public class BizBundler {
 //            URL resource = loader.getResource("com/cainiao/alphabird/biz/"+"demo"+"/alphabird-biz.xml");
 //            Thread.currentThread().setContextClassLoader(loader);
             Class xmlApplicationClass = loader.loadClass("org.springframework.context.support.ClassPathXmlApplicationContext");
+            Class abstractApplicationContext = loader.loadClass("org.springframework.context.support.AbstractApplicationContext");
+            Method setClassLoaderMethod = abstractApplicationContext.getMethod("setClassLoader",ClassLoader.class);
+            //TODO 如何在创建之前调用= =
             Constructor constructor = xmlApplicationClass.getConstructor(String.class);
             Object beanFactory = constructor.newInstance("classpath:com/cainiao/chushi/conflictc/alphabird-biz.xml");
 
