@@ -2,15 +2,9 @@
 //import ch.qos.logback.core.util.StatusPrinter;
 //import com.cainiao.alphabird.biz.sdk.service.BusinessServiceResultDTO;
 //import com.cainiao.chushi.conflictb.LogUtil;
-import com.cainiao.alphabird.biz.sdk.service.BusinessServiceResultDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sun.rmi.runtime.Log;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by dengrong on 2017/6/2.
@@ -21,8 +15,8 @@ public class Main {
 //    static private Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        Test test = new Test();
-//        List<ObjectBundle> list = test.loadBusinessServiceList("conflict-c");
+        BizBundler bizBundler = new BizBundler();
+//        List<ObjectBundle> list = bizBundler.loadBusinessServiceList("conflict-c");
 //        for (ObjectBundle ob :list
 //             ) {
 //            Class clazz = ob.getClazz();
@@ -35,17 +29,17 @@ public class Main {
 //            }
 //
 //        }
-        List<BizServiceInvoker> list = test.loadBusinessServiceList("demo");
+        List<BizServiceInvoker> list = bizBundler.loadBusinessServiceList("conflict-c");
         for (BizServiceInvoker invoker : list
                 ) {
             System.out.println(invoker.getRequestId("asas", new HashMap<String, Object>()));
-            BusinessServiceResultDTO dto = invoker.execute("sdsdf", new HashMap());
-            System.out.println(dto.getData());
-            System.out.println(dto.getExtraInfo().get("info"));
+//            BusinessServiceResultDTO dto = invoker.execute("sdsdf", new HashMap());
+//            System.out.println(dto.getData());
+//            System.out.println(dto.getExtraInfo().get("info"));
             System.out.println(invoker.getServedBizIds()[0]);
             System.out.println(invoker.getBizServiceSimpleName());
             System.out.println(invoker.getServicePriority());
-            System.out.println(invoker.getExtTraceParams("sdsdf", new HashMap<String, Object>()).getLinkId());
+//            System.out.println(invoker.getExtTraceParams("sdsdf", new HashMap<String, Object>()).getLinkId());
         }
         // 记录error信息
 //        logger.error("[info message]");
