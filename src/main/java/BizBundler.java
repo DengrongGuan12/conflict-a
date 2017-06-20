@@ -113,7 +113,7 @@ public class BizBundler {
         try {
             System.out.println(path);
             final ClassLoader loader = new DependencyArchiveLauncher().getClassLoader(path);
-//            Class businessServiceClass = loader.loadClass("com.cainiao.alphabird.biz.sdk.service.BusinessService");
+            Class businessServiceClass = loader.loadClass("com.cainiao.alphabird.biz.sdk.service.BusinessService");
             InputStream inputStream = loader.getResourceAsStream("com/cainiao/chushi/"+bizBundleName+"/alphabird-biz.xml");
             inputStream.close();
 //
@@ -196,17 +196,30 @@ public class BizBundler {
 
 
 
+//            Class xmlApplicationClass = loader.loadClass("org.springframework.context.support.ClassPathXmlApplicationContext");
+//            Object beanFactory = xmlApplicationClass.newInstance();
+//            // 切入点
+//            Method setClassLoaderMethod = xmlApplicationClass.getMethod("setClassLoader",ClassLoader.class);
+//            setClassLoaderMethod.invoke(beanFactory,loader);
+//            Method setConfigLocationMethod = xmlApplicationClass.getMethod("setConfigLocation",String.class);
+//            setConfigLocationMethod.invoke(beanFactory,"classpath:com/cainiao/chushi/conflictc/alphabird-biz.xml");
+//            Method refreshMethod = xmlApplicationClass.getMethod("refresh");
+//            refreshMethod.invoke(beanFactory);
+//            Method getBeansMethod = xmlApplicationClass.getMethod("getBeansOfType",Class.class);
+//            Class logUtilClass = loader.loadClass("com.cainiao.chushi.conflictc.LogUtil");
+//            Map<String,Object>  map = (Map<String, Object>) getBeansMethod.invoke(beanFactory,logUtilClass);
+//            System.out.println(map.values().toString());
+
             Class xmlApplicationClass = loader.loadClass("org.springframework.context.support.ClassPathXmlApplicationContext");
-            Object beanFactory = xmlApplicationClass.newInstance();
-            // 切入点
+            Object xmlApplicationContext = xmlApplicationClass.newInstance();
             Method setClassLoaderMethod = xmlApplicationClass.getMethod("setClassLoader",ClassLoader.class);
-            setClassLoaderMethod.invoke(beanFactory,loader);
+            setClassLoaderMethod.invoke(xmlApplicationContext,loader);
             Method setConfigLocationMethod = xmlApplicationClass.getMethod("setConfigLocation",String.class);
-            setConfigLocationMethod.invoke(beanFactory,"classpath:com/cainiao/chushi/conflictc/alphabird-biz.xml");
+            setConfigLocationMethod.invoke(xmlApplicationContext,"classpath:com/cainiao/chushi/conflictc/alphabird-biz.xml");
             Method refreshMethod = xmlApplicationClass.getMethod("refresh");
-            refreshMethod.invoke(beanFactory);
-            Method getBeansMethod = xmlApplicationClass.getMethod("getBean",String.class);
-            Object object = getBeansMethod.invoke(beanFactory,"logUtil");
+            refreshMethod.invoke(xmlApplicationContext);
+            Method getBeansMethod = xmlApplicationClass.getMethod("getBeansOfType",Class.class);
+            Map<String,Object> map = (Map<String, Object>) getBeansMethod.invoke(xmlApplicationContext,businessServiceClass);
 
 
 //            Class abstractApplicationContext = loader.loadClass("org.springframework.context.support.AbstractApplicationContext");
