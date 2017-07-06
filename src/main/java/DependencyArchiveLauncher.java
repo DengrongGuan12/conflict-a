@@ -26,16 +26,13 @@ public class DependencyArchiveLauncher extends Launcher {
     protected List<Archive> getClassPathArchives() throws Exception {
         ArrayList archives = new ArrayList(this.archive.getNestedArchives(new Archive.EntryFilter() {
             public boolean matches(Archive.Entry entry) {
-                return DependencyArchiveLauncher.this.isNestedArchive(entry);
+                return isNestedArchive(entry);
             }
         }));
-        this.postProcessClassPathArchives(archives);
         return archives;
     }
     protected boolean isNestedArchive(Archive.Entry entry) {
-        return entry.isDirectory()?entry.getName().equals("BOOT-INF/classes/"):entry.getName().startsWith("BOOT-INF/lib/");
-    }
-    protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
+        return entry.isDirectory()?entry.getName().equals("BOOT-INF/classes/"):entry.getName().toString().startsWith("BOOT-INF/lib/");
     }
     public ClassLoader getClassLoader(String path) throws Exception{
         this.archive = this.createMyArchive(path);

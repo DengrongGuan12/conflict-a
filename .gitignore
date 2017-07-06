@@ -21,3 +21,6 @@ ConfigsDump
 .settings
 
 .DS_Store
+alphabird.logback.loggingRoot_IS_UNDEFINED/
+hs_err_pid34645.log
+

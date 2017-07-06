@@ -33,9 +33,37 @@
         <!--</dependency>-->
         <dependency>
             <groupId>com.cainiao.alphabird.biz</groupId>
-            <artifactId>demo</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <artifactId>ilogistics</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.taobao.common.division</groupId>
+                    <artifactId>common-division</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.8.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.sf.dozer/dozer -->
+        <dependency>
+            <groupId>net.sf.dozer</groupId>
+            <artifactId>dozer</artifactId>
+            <version>5.5.1</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-loader -->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-loader</artifactId>-->
+            <!--<version>1.2.3.RELEASE</version>-->
+        <!--</dependency>-->
+
 
 
         <dependency>
@@ -59,11 +87,6 @@
 
         <!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
         <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
@@ -78,6 +101,9 @@
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/cglib/cglib -->
+
         <!--<dependency>-->
             <!--<groupId>ch.qos.logback</groupId>-->
             <!--<artifactId>logback-classic</artifactId>-->
